@@ -12,13 +12,13 @@ list_t *add_node(list_t **head, const char *str, int num)
 {
 	list_t *new_head;
 
-	if (!head)
+	if (!head) // Check if the head pointer is NULL and return NULL if it is.
 		return (NULL);
-	new_head = malloc(sizeof(list_t));
+	new_head = malloc(sizeof(list_t)); // Allocate memory for a new node.
 	if (!new_head)
 		return (NULL);
 	_memset((void *)new_head, 0, sizeof(list_t));
-	new_head->num = num;
+	new_head->num = num; // Set the 'num' field of the new node to the provided 'num' value.
 	if (str)
 	{
 		new_head->str = _strdup(str);
@@ -74,24 +74,19 @@ list_t *add_node_end(list_t **head, const char *str, int num)
 	return (new_node);
 }
 
-/**
- * print_list_str - prints only the str element of a list_t linked list
- * @h: pointer to first node
- *
- * Return: size of list
- */
+
 size_t print_list_str(const list_t *h)
 {
-	size_t i = 0;
+	size_t x = 0; // Initialize a counter to keep track of the number of elements.
 
 	while (h)
 	{
-		_puts(h->str ? h->str : "(nil)");
-		_puts("\n");
-		h = h->next;
-		i++;
+		_puts(h->str ? h->str : "(Null)"); // Print the string or "(Null)" if it's NULL.
+		_puts("\n"); // Print a newline character to separate entries.
+		h = h->next; // Move to the next node in the list.
+		x++; // Increment the counter for each element printed.
 	}
-	return (i);
+	return (x); // Return the total number of elements printed.
 }
 
 /**
@@ -142,18 +137,18 @@ int delete_node_at_index(list_t **head, unsigned int index)
  */
 void free_list(list_t **head_ptr)
 {
-	list_t *node, *next_node, *head;
+	list_t *node, *next_node, *h;
 
 	if (!head_ptr || !*head_ptr)
 		return;
-	head = *head_ptr;
-	node = head;
+	h = *head_ptr; // Get a reference to the head of the linked list.
+	node = h;
 	while (node)
 	{
-		next_node = node->next;
-		free(node->str);
-		free(node);
-		node = next_node;
+		next_node = node->next; // Get the next node in the list.
+		free(node->str); / Free the memory associated with the string stored in the current node.
+		free(node); // Free the memory associated with the current node.
+		node = next_node; // Move to the next node in the list.
 	}
-	*head_ptr = NULL;
+	*head_ptr = NULL; // Set the head pointer to NULL to indicate that the list is now empty.
 }
