@@ -100,12 +100,16 @@ ssize_t get_input(info_t *info)
 ssize_t read_buf(info_t *info, char *buf, size_t *i)
 {
 	ssize_t r = 0;
-
+// Check if the size pointed to by 'i' is non-zero.
 	if (*i)
 		return (0);
+	// Attempt to read data from the file descriptor 'info->readfd' into the 'buf' array with a maximum size of 'READ_BUF_SIZE'.
 	r = read(info->readfd, buf, READ_BUF_SIZE);
+
+	// If data was successfully read (r >= 0), update the value pointed to by 'i' with the number of bytes read.
 	if (r >= 0)
 		*i = r;
+	// Return the result of the read operation.
 	return (r);
 }
 
@@ -120,7 +124,7 @@ ssize_t read_buf(info_t *info, char *buf, size_t *i)
 int _getline(info_t *info, char **ptr, size_t *length)
 {
 	static char buf[READ_BUF_SIZE];
-	static size_t i, len;
+	static size_t x, len;
 	size_t k;
 	ssize_t r = 0, s = 0;
 	char *p = NULL, *new_p = NULL, *c;
@@ -128,13 +132,16 @@ int _getline(info_t *info, char **ptr, size_t *length)
 	p = *ptr;
 	if (p && length)
 		s = *length;
-	if (i == len)
-		i = len = 0;
-
+	if (x == len)
+		x = len = 0;
+// Read data into the buffer using the read_buf function.
 	r = read_buf(info, buf, &len);
+	// Check for read errors or the end of the input.
 	if (r == -1 || (r == 0 && len == 0))
 		return (-1);
 
+
+// Locate the newline character '\n' in the buffer.
 	c = _strchr(buf + i, '\n');
 	k = c ? 1 + (unsigned int)(c - buf) : len;
 	new_p = _realloc(p, s, s ? s + k : k + 1);
@@ -142,16 +149,20 @@ int _getline(info_t *info, char **ptr, size_t *length)
 		return (p ? free(p), -1 : -1);
 
 	if (s)
-		_strncat(new_p, buf + i, k - i);
+		_strncat(new_p, buf + x, k - i);
 	else
-		_strncpy(new_p, buf + i, k - i + 1);
+		_strncpy(new_p, buf + x, k - x + 1);
 
-	s += k - i;
-	i = k;
+	// Update the length of the result string (s) and the position (x) in the buffer.
+	s += k - x;
+	x = k;
 	p = new_p;
 
+	// Update the length if requested.
 	if (length)
 		*length = s;
+
+	// Update the pointer to the result.
 	*ptr = p;
 	return (s);
 }
@@ -159,12 +170,14 @@ int _getline(info_t *info, char **ptr, size_t *length)
 /**
  * sigintHandler - blocks ctrl-C
  * @sig_num: the signal number
- *
  * Return: void
  */
 void sigintHandler(__attribute__((unused))int sig_num)
 {
+	// Output a newline character to move to a new line.
 	_puts("\n");
+	// Output a prompt symbol to indicate the shell is ready for user input.
 	_puts("$ ");
+	// Flush the output buffer, often to ensure the prompt is immediately visible.
 	_putchar(BUF_FLUSH);
 }
