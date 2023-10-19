@@ -1,21 +1,20 @@
 #include "shell.h"
 
 /**
- * list_len - determines length of linked list
+ * list_len - determines length of linked_list
  * @h: pointer to first node
- *
  * Return: size of list
  */
 size_t list_len(const list_t *h)
 {
-	size_t i = 0;
+	size_t z = 0; 
 
 	while (h)
 	{
-		h = h->next;
-		i++;
+		h = h->next;// Move to the next node in the list.
+		z++;// Increment the counter for each element.
 	}
-	return (i);
+	return (z);
 }
 
 /**
@@ -26,7 +25,7 @@ size_t list_len(const list_t *h)
  */
 char **list_to_strings(list_t *head)
 {
-	list_t *node = head;
+	list_t *node = head;// Check if the linked list is empty, or if the number of elements is zero, and return NULL.
 	size_t i = list_len(head), j;
 	char **strs;
 	char *str;
@@ -50,7 +49,7 @@ char **list_to_strings(list_t *head)
 		str = _strcpy(str, node->str);
 		strs[i] = str;
 	}
-	strs[i] = NULL;
+	strs[i] = NULL;// Set the last element of the array to NULL to indicate the end of the array.
 	return (strs);
 }
 
@@ -63,19 +62,19 @@ char **list_to_strings(list_t *head)
  */
 size_t print_list(const list_t *h)
 {
-	size_t i = 0;
+	size_t x = 0;
 
 	while (h)
 	{
-		_puts(convert_number(h->num, 10, 0));
-		_putchar(':');
-		_putchar(' ');
-		_puts(h->str ? h->str : "(nil)");
-		_puts("\n");
-		h = h->next;
-		i++;
+		_puts(convert_number(h->num, 10, 0)); // Print the integer 'num'.
+		_putchar(':'); // Print a colon.
+		_putchar(' '); // Print a space.
+		_puts(h->str ? h->str : "(Null)");// Print NULL.
+		_puts("\n");// Print a newline character to separate entries.
+		h = h->next;// Move to the next node in the list.
+		x++;// Increment the counter for each element printed.
 	}
-	return (i);
+	return (x);// Return the total number of elements printed.
 }
 
 /**
@@ -93,11 +92,11 @@ list_t *node_starts_with(list_t *node, char *prefix, char c)
 	while (node)
 	{
 		p = starts_with(node->str, prefix);
-		if (p && ((c == -1) || (*p == c)))
+		if (p && ((c == -1) || (*p == c))) // If the string starts with the prefix and matches the character (or character check is not required), return the current node.
 			return (node);
-		node = node->next;
+		node = node->next;// Move to the next node in the list.
 	}
-	return (NULL);
+	return (NULL);// If no matching node is found, return NULL.
 }
 
 /**
@@ -109,14 +108,14 @@ list_t *node_starts_with(list_t *node, char *prefix, char c)
  */
 ssize_t get_node_index(list_t *head, list_t *node)
 {
-	size_t i = 0;
+	size_t x = 0; // Initialize an index counter to keep track of the position of the target node.
 
 	while (head)
 	{
-		if (head == node)
-			return (i);
-		head = head->next;
-		i++;
+		if (head == node) // Check if the current node matches the target node.
+			return (x); // If a match is found, return the index 'x'.
+		head = head->next; // Move to the next node in the list.
+		x++;// Increment the index counter for each node visited.
 	}
 	return (-1);
 }
