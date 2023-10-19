@@ -9,16 +9,22 @@
  */
 int hsh(info_t *info, char **av)
 {
-	ssize_t r = 0;
+	
+	ssize_t x = 0;
 	int builtin_ret = 0;
 
-	while (r != -1 && builtin_ret != -2)
+	while (x != -1 && builtin_ret != -2)
 	{
+		// Clear the information stored in the 'info' structure.
 		clear_info(info);
+
+		// If running in interactive mode, print a shell prompt.
 		if (interactive(info))
 			_puts("$ ");
 		_eputchar(BUF_FLUSH);
 		r = get_input(info);
+
+		// Set information in the 'info' structure based on the input.
 		if (r != -1)
 		{
 			set_info(info, av);
@@ -30,10 +36,15 @@ int hsh(info_t *info, char **av)
 			_putchar('\n');
 		free_info(info, 0);
 	}
+	// Write command history.
 	write_history(info);
+	
+	// Free resources associated with the 'info' structure.
 	free_info(info, 1);
 	if (!interactive(info) && info->status)
 		exit(info->status);
+
+	// If 'builtin_ret' is -2, exit with 'info->err_num'.
 	if (builtin_ret == -2)
 	{
 		if (info->err_num == -1)
@@ -54,7 +65,8 @@ int hsh(info_t *info, char **av)
  */
 int find_builtin(info_t *info)
 {
-	int i, built_in_ret = -1;
+	int x, built_in_ret = -1;
+	// Define a table of built-in commands and their corresponding functions.
 	builtin_table builtintbl[] = {
 		{"exit", _myexit},
 		{"env", _myenv},
@@ -67,11 +79,14 @@ int find_builtin(info_t *info)
 		{NULL, NULL}
 	};
 
-	for (i = 0; builtintbl[i].type; i++)
-		if (_strcmp(info->argv[0], builtintbl[i].type) == 0)
+	// Iterate through the built-in command table.
+	for (x = 0; builtintbl[x].type; i++)
+		if (_strcmp(info->argv[0], builtintbl[x].type) == 0)
 		{
+			// If a match is found, increment the line count.
 			info->line_count++;
-			built_in_ret = builtintbl[i].func(info);
+			// Call the corresponding built-in function and store its return value.
+			built_in_ret = builtintbl[x].func(info);
 			break;
 		}
 	return (built_in_ret);
@@ -88,6 +103,7 @@ void find_cmd(info_t *info)
 	char *path = NULL;
 	int i, k;
 
+	// Count the number of non-delimiter arguments in 'info->arg'.
 	info->path = info->argv[0];
 	if (info->linecount_flag == 1)
 	{
@@ -97,6 +113,7 @@ void find_cmd(info_t *info)
 	for (i = 0, k = 0; info->arg[i]; i++)
 		if (!is_delim(info->arg[i], " \t\n"))
 			k++;
+	// If there are no non-delimiter arguments, return without further action.
 	if (!k)
 		return;
 
@@ -108,11 +125,13 @@ void find_cmd(info_t *info)
 	}
 	else
 	{
+		// If a path is not found, check conditions to determine how to proceed.
 		if ((interactive(info) || _getenv(info, "PATH=")
 			|| info->argv[0][0] == '/') && is_cmd(info, info->argv[0]))
 			fork_cmd(info);
 		else if (*(info->arg) != '\n')
 		{
+			// If the command is not found, set 'info->status' to 127 and print an error message.
 			info->status = 127;
 			print_error(info, "not found\n");
 		}
